@@ -14,14 +14,14 @@ public class ScannerUtil {
 
 
     /**
-     * 根据指定的下标返回指定的热搜
-     * @return
+     * 获取到的下标然后展示成一个int型的
+     * @return int
      */
 
     public static  int  readInt(){
         int i = 0;
         while (true){
-            String string = readScanner(3,false);
+            String string = readScanner(4,false);
             i = Integer.parseInt(string);
             break;
         }
@@ -34,15 +34,15 @@ public class ScannerUtil {
      * @param limit
      * @return
      */
-        public  static  String  readString(int limit) {
+    public  static  String  readString(int limit) {
         String s = readScanner(limit, false);
         return  s;
     }
 
 
     /**
-     * 从控制台输入数据
-     * @param  size
+     * 在控制台中展示的数据的个数
+     * @param  size ： 展示的控制台的个数
      * @return
      */
     public static  char readMenuScanner(int size){

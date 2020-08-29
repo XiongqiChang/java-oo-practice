@@ -34,6 +34,17 @@ public class HotSearch {
      */
     private boolean doubleAdd;
 
+    /**
+     *
+     *是否为买热搜
+     */
+    private  boolean isBuy;
+
+    /**
+     * 买热搜要花的钱
+     */
+    private  Integer price;
+
 
     public Integer getHotId() {
         return hotId;
@@ -81,5 +92,29 @@ public class HotSearch {
 
     public void setIndex(Integer index) {
         this.index = index;
+    }
+
+    public boolean isDoubleAdd() {
+        return doubleAdd;
+    }
+
+    public void setDoubleAdd(boolean doubleAdd) {
+        this.doubleAdd = doubleAdd;
+    }
+
+    public boolean isBuy() {
+        return isBuy;
+    }
+
+    public void setBuy(boolean buy) {
+        isBuy = buy;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
     }
 }

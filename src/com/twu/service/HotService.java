@@ -2,10 +2,7 @@ package com.twu.service;
 
 import com.twu.model.HotSearch;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Auther: xqc
@@ -17,13 +14,11 @@ public class HotService {
 
     private  List<HotSearch> hotList = new ArrayList<>();
 
-
-
   {
-      hotList.add(new HotSearch(11,"比特币你好",4));
-      hotList.add(new HotSearch(22,"今天是干嘛呢",9));
-      hotList.add(new HotSearch(31,"成分评论",300));
-      hotList.add(new HotSearch(41,"你好",40));
+      hotList.add(new HotSearch(11,"比特币今天的市场",4));
+      hotList.add(new HotSearch(22,"乘风破浪的姐姐",9));
+      hotList.add(new HotSearch(31,"火影忍者",300));
+      hotList.add(new HotSearch(41,"疫情情况",40));
 
 
   }
@@ -42,7 +37,40 @@ public class HotService {
     public List<HotSearch> hotSearchList(){
         Collections.sort(hotList, Comparator.comparingInt(HotSearch::getHotScore));
         Collections.reverse(hotList);
-        return  hotList;
+
+        List<HotSearch> newHotSearch = new ArrayList<>();
+
+        Iterator<HotSearch> iterator = hotList.iterator();
+        while (iterator.hasNext()){
+            HotSearch next = iterator.next();
+           if (next.isBuy()){
+               newHotSearch.add(next);
+           }
+        }
+        //现在newHotSearch里面都是已经购买过热搜的热搜列表
+        Collections.sort(newHotSearch,Comparator.comparingInt(HotSearch::getPrice));
+        Collections.reverse(newHotSearch);
+
+        if (newHotSearch.size() >=2){
+            int price = newHotSearch.get(0).getPrice();
+            Iterator<HotSearch> iterator1 = newHotSearch.iterator();
+            while (iterator1.hasNext()){
+                HotSearch next = iterator1.next();
+                if (next.getPrice() < price){
+                    iterator1.remove();
+                }
+            }
+        }
+
+        /**
+         * 将之前的热搜合并到一起
+         */
+        for (HotSearch hotSearch : hotList){
+            if (!hotSearch.isBuy()){
+                newHotSearch.add(hotSearch);
+            }
+        }
+        return  newHotSearch;
     }
 
     /**
