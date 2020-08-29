@@ -8,9 +8,19 @@ package com.twu.model;
  */
 public class User {
 
+    /**
+     * 用户的名称
+     */
     private  String userName;
+
+    /**
+     * 登录密码，只针对管理人员生效
+     */
     private  String password;
 
+    /**
+     * 每一个用户的投票数目
+     */
     private Integer voteCount;
 
     public Integer getVoteCount() {
