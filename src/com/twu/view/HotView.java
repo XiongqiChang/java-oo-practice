@@ -64,7 +64,7 @@ public class HotView {
                 break;
             case '2':
                 User admin = new User("admin","admin");
-                System.out.println("请登录账号");
+                System.out.println("请登录账号(管理人员账号=admin,密码=admin");
                 String userName = ScannerUtil.readString(10);
                 if (userName.equals(admin.getUserName())){
                     System.out.println("请输入密码");
