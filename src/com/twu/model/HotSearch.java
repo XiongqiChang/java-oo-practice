@@ -1,7 +1,7 @@
 package com.twu.model;
 
 /**
- * @Auther: xqc
+ * @author r: xqc
  * @Date: 2020/8/28 - 08 - 28 - 10:28
  * @Description: com.twu.model
  * @version: 1.0

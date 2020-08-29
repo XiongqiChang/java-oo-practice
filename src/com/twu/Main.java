@@ -8,5 +8,6 @@ public class Main {
 
         HotView hotView = new HotView();
         hotView.mainView();
+
     }
 }

@@ -5,7 +5,7 @@ import com.twu.model.HotSearch;
 import java.util.*;
 
 /**
- * @Auther: xqc
+ * @author r: xqc
  * @Date: 2020/8/28 - 08 - 28 - 14:15
  * @Description: com.twu.service
  * @version: 1.0
@@ -19,8 +19,6 @@ public class HotService {
       hotList.add(new HotSearch(22,"乘风破浪的姐姐",9));
       hotList.add(new HotSearch(31,"火影忍者",300));
       hotList.add(new HotSearch(41,"疫情情况",40));
-
-
   }
 
     /**
@@ -53,13 +51,14 @@ public class HotService {
 
         if (newHotSearch.size() >=2){
             int price = newHotSearch.get(0).getPrice();
-            Iterator<HotSearch> iterator1 = newHotSearch.iterator();
-            while (iterator1.hasNext()){
+            /*while (iterator1.hasNext()){
                 HotSearch next = iterator1.next();
                 if (next.getPrice() < price){
                     iterator1.remove();
                 }
-            }
+            }*/
+
+            newHotSearch.removeIf(next -> next.getPrice() < price);
         }
 
         /**

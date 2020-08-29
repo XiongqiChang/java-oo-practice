@@ -5,22 +5,21 @@ import com.twu.model.User;
 import com.twu.service.HotService;
 import com.twu.utils.ScannerUtil;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 
 /**
- * @Auther: xqc
+ * @author r: xqc
  * @Date: 2020/8/28 - 08 - 28 - 10:42
  * @Description: com.twu.view
  * @version: 1.0
  */
 public class HotView {
 
-    private  static Integer VOTE_COUNT = 10;
+    private  static  Integer  VOTE_COUNT = 10;
     private  static  Integer i = 0;
+    private  static  Map<String, User> map = new HashMap<>();
+    private  static   String userName ;
 
     private HotService hotService = new HotService();
 
@@ -40,16 +39,21 @@ public class HotView {
      *
      * @param choose
      */
-    public void selectFirst(char choose) {
+    private void selectFirst(char choose) {
         switch (choose) {
             case '1':
                 //展示热搜
                 System.out.println("请登录账号");
-                String read = ScannerUtil.readString(10);
-                User user = new User(read);
-
+                userName= ScannerUtil.readString(10);
+                User user;
+                if (!map.containsKey(userName)){
+                    user = new User(userName,VOTE_COUNT);
+                    map.put(userName,user);
+                }else {
+                    user = map.get(userName);
+                }
                 while (true) {
-                    System.out.println("欢迎" + user.getUserName() + "进入");
+                    System.out.println("=======欢迎" + user.getUserName() + "进入======");
                     System.out.println("您可以选择：\n 1.查看热搜排行榜\n 2.给热搜事件投票\n 3.购买热搜\n 4.添加热搜\n 5.退出\n");
                     char c = ScannerUtil.readMenuScanner(5);
                     selectSecond(c);
@@ -67,7 +71,7 @@ public class HotView {
                     String password = ScannerUtil.readString(10);
                     if (password.equals(admin.getPassword())){
                         while (true) {
-                            System.out.println("欢迎" + userName + "进入到热搜系统");
+                            System.out.println("======欢迎" + userName + "进入到热搜系统======");
                             System.out.println("您可以选择：\n 1.查看热搜排行榜\n 2.添加热搜\n 3.设置超级热搜\n 4.退出\n ");
                             char c = ScannerUtil.readMenuScanner(4);
                             selectSecondAdmin(c);
@@ -91,7 +95,7 @@ public class HotView {
      * 二级选择，为普通用户之后可以进行的操作
      */
 
-    public void selectSecond(char c) {
+    private void selectSecond(char c) {
 
         switch (c) {
             case '1':
@@ -100,7 +104,7 @@ public class HotView {
                 break;
             case '2':
                 System.out.println("你可以给热搜投票");
-                updateHotSearch();
+                updateHotSearch2(userName);
                 break;
             case '3':
                 System.out.println("您可以购买热搜");
@@ -116,7 +120,7 @@ public class HotView {
     /**
      * 判断是否买了热搜
      */
-    private   List<HotSearch>  hotIsBuyed(List<HotSearch> list){
+    private List<HotSearch>  hotIsBuyed(List<HotSearch> list){
 
         List<HotSearch> isBuyedList = new ArrayList<>();
 
@@ -133,8 +137,8 @@ public class HotView {
     /**
      * 购买热搜
      */
-    public void buyHotSearch(){
-        System.out.println("您想为哪一个购买热搜呢");
+    private void buyHotSearch(){
+        System.out.println("您想为哪一个购买热搜呢,请输入热搜序号:(例如1）");
         List<HotSearch> list =  hotService.hotSearchList();
         HotSearch hotSearch = readIndex(list);
         System.out.println("您想花多少钱呢：");
@@ -149,7 +153,7 @@ public class HotView {
                     hotSearch.setBuy(true);
                     System.out.println("购买成功");
                 }else {
-                    System.out.println("钱数不足，购买失败");
+                    System.out.println("money不足，购买失败");
                     return;
                 }
             }
@@ -164,9 +168,9 @@ public class HotView {
 
     /**
      * 二级选择，展示管理人员的登录
-     * @param a
+     * @param a 用户在控制台中的输入
      */
-    public void selectSecondAdmin(char a ) {
+    private void selectSecondAdmin(char a ) {
         switch (a) {
             case '1':
                 System.out.println("展示的是所有的热搜：");
@@ -200,7 +204,7 @@ public class HotView {
 
 
     /**
-     *热搜投票
+     *单个用户热搜投票
      */
     private void updateHotSearch(){
        while (true){
@@ -212,9 +216,8 @@ public class HotView {
                 i = ScannerUtil.readInt();
                 if (i <= 0 || i > VOTE_COUNT){
                     System.out.println("票数不对，请重新投票");
-                    continue;
+                    //continue;
                 }else{
-//                    System.out.println(hotSearch.isDoubleAdd());
                     if (hotSearch.isDoubleAdd()){
 
                         hotSearch.setHotScore(hotSearch.getHotScore() + i*2);
@@ -225,6 +228,45 @@ public class HotView {
                     return;
                 }
             }else{
+                System.out.println("很遗憾您的剩余的票数不足");
+                break;
+            }
+        }
+        System.out.println("投票结束");
+    }
+
+
+    /**
+     * 多用户互相不干扰投票
+     * @param userName
+     */
+    private void updateHotSearch2(String  userName){
+        while (true){
+            System.out.println("那你要给哪一个投票呢,请输入热搜排行的序号：");
+            HotSearch hotSearch = readIndex(hotService.hotSearchList());
+            System.out.println("现在这个热搜有" + hotSearch.getHotScore() + "票");
+            //通过userName获取到user
+            User user =  map.get(userName);
+            int count = user.getVoteCount();
+            if (count > 0 ){
+                System.out.println("您给这个投多少呢,您现在可以投" + count + "票");
+                i = ScannerUtil.readInt();
+                if (i < 0 || i > count){
+                    System.out.println("票数不对，请重新投票");
+                    //continue;
+                }else{
+                    if (hotSearch.isDoubleAdd()){
+
+                        hotSearch.setHotScore(hotSearch.getHotScore() + i*2);
+                    }else{
+                        hotSearch.setHotScore(hotSearch.getHotScore() + i);
+                    }
+                    count = count - i;
+                    user.setVoteCount(count);
+                    System.out.println("投票成功");
+                    return;
+                }
+            }else{
                 System.out.println("剩余的票数不足");
                 break;
             }
@@ -232,9 +274,12 @@ public class HotView {
         System.out.println("投票结束");
     }
 
+
+
+
     /**
      * 展示出所有的热搜
-     * @param hotSearches
+     * @param hotSearches 热搜列表
      */
     private void printHotSearch(List<HotSearch> hotSearches) {
         System.out.println("====热搜列表=====");
@@ -289,7 +334,7 @@ public class HotView {
     /**
      * 添加热搜
      *
-     * @return
+     * @return 添加新的热搜
      */
     private HotSearch addHotSearch() {
         System.out.println("热搜的描述");
@@ -306,7 +351,7 @@ public class HotView {
     /**
      * 根据下标返回值
      *
-     * @return
+     * @return 返回热搜值
      */
     private HotSearch readIndex(List<HotSearch> list) {
 

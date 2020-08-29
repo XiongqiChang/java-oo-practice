@@ -1,7 +1,7 @@
 package com.twu.model;
 
 /**
- * @Auther: xqc
+ * @author r: xqc
  * @Date: 2020/8/28 - 08 - 28 - 10:12
  * @Description: com.twu.model
  * @version: 1.0
@@ -10,6 +10,16 @@ public class User {
 
     private  String userName;
     private  String password;
+
+    private Integer voteCount;
+
+    public Integer getVoteCount() {
+        return voteCount;
+    }
+
+    public void setVoteCount(Integer voteCount) {
+        this.voteCount = voteCount;
+    }
 
     public String getUserName() {
         return userName;
@@ -36,4 +46,8 @@ public class User {
         this.userName = userName;
     }
 
+    public User(String userName, Integer voteCount) {
+        this.userName = userName;
+        this.voteCount = voteCount;
+    }
 }

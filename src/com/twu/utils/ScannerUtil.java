@@ -3,7 +3,7 @@ package com.twu.utils;
 import java.util.Scanner;
 
 /**
- * @Auther: xqc
+ * @author r: xqc
  * @Date: 2020/8/28 - 08 - 28 - 11:07
  * @Description: com.twu.utils
  * @version: 1.0
@@ -21,7 +21,7 @@ public class ScannerUtil {
     public static  int  readInt(){
         int i = 0;
         while (true){
-            String string = readScanner(4,false);
+            String string = readScanner(5,false);
             i = Integer.parseInt(string);
             break;
         }
@@ -87,7 +87,7 @@ public class ScannerUtil {
                 }
             }
             if (input.length() > limit) {
-                System.out.println("您输入的长度有误，不能大于" + limit + "请重新输入：");
+                System.out.println("您输入的位数有误,不能大于" + limit + "位,请重新输入：");
                 continue;
             }
             break;
