@@ -22,7 +22,31 @@ public class ScannerUtil {
         int i = 0;
         while (true){
             String string = readScanner(5,false);
-            i = Integer.parseInt(string);
+           try{
+               i = Integer.parseInt(string);
+           }catch (Exception e){
+               System.out.println("输入有误");
+               continue;
+           }
+            break;
+        }
+        return  i;
+    }
+
+    public static  int  readRankInt(){
+        int i = 0;
+        while (true){
+            String string = readScanner(5,false);
+            try{
+                i = Integer.parseInt(string);
+                if (i <= 0){
+                    System.out.println("大于1的数字");
+                    continue;
+                }
+            }catch (Exception e){
+                System.out.println("输入有误");
+                continue;
+            }
             break;
         }
         return  i;

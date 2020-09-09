@@ -19,8 +19,7 @@ public class HotView {
     private  static  Integer  VOTE_COUNT = 10;
     private  static  Integer i = 0;
     private  static  Map<String, User> map = new HashMap<>();
-    private  static   String userName ;
-
+    private  static  String userName ;
     private HotService hotService = new HotService();
 
     public void mainView() {
@@ -35,8 +34,7 @@ public class HotView {
 
     /**
      * 第一次选择
-     * 根据不同的用户角色进入到不同的热搜展示
-     *
+     * 根据不同的用户角色进入到不同的热搜
      * @param choose
      */
     private void selectFirst(char choose) {
@@ -120,14 +118,14 @@ public class HotView {
     /**
      * 判断是否买了热搜
      */
-    private List<HotSearch>  hotIsBuyed(List<HotSearch> list){
+        private List<HotSearch>  hotIsBuyed(List<HotSearch> list,Integer rank){
 
-        List<HotSearch> isBuyedList = new ArrayList<>();
+         List<HotSearch> isBuyedList = new ArrayList<>();
 
         Iterator<HotSearch> iterator = list.iterator();
         while (iterator.hasNext()){
             HotSearch next = iterator.next();
-            if (next.isBuy()){
+            if (next.isBuy() && next.getRank().equals(rank)){
                 isBuyedList.add(next);
             }
         }
@@ -143,14 +141,19 @@ public class HotView {
         HotSearch hotSearch = readIndex(list);
         System.out.println("您想花多少钱呢：");
         int price = ScannerUtil.readInt();
-        List<HotSearch> list1 = hotIsBuyed(list);
+        System.out.println("您想买到第几位呢？");
+        int rank = ScannerUtil.readInt();
+        List<HotSearch> list1 = hotIsBuyed(list,rank);
         if (list1.size() > 0){
-            System.out.println("当前有人买了热搜");
+            System.out.println("当前有人买了热搜,");
             //那就要判断现在的钱够不够
             for (HotSearch hotSearchBuyed : list1){
                 if (price > hotSearchBuyed.getPrice()){
                     hotSearch.setPrice(price);
                     hotSearch.setBuy(true);
+                    hotSearch.setRank(rank);
+                    String desc = hotSearchBuyed.getHotName();
+                    hotService.deletHotSearch(desc);
                     System.out.println("购买成功");
                 }else {
                     System.out.println("money不足，购买失败");
@@ -161,12 +164,13 @@ public class HotView {
             System.out.println("当前没有人买热搜");
             hotSearch.setPrice(price);
             hotSearch.setBuy(true);
+            hotSearch.setRank(rank);
             System.out.println("购买成功");
         }
 
       }
 
-    /**
+       /**
      * 二级选择，展示管理人员的登录
      * @param a 用户在控制台中的输入
      */
@@ -201,40 +205,6 @@ public class HotView {
         }
 
     }
-
-
-    /**
-     *单个用户热搜投票
-     */
-    private void updateHotSearch(){
-       while (true){
-           System.out.println("那你要给哪一个投票呢");
-           HotSearch hotSearch = readIndex(hotService.hotSearchList());
-           System.out.println("现在这个热搜有" + hotSearch.getHotScore() + "票");
-            if (VOTE_COUNT > 0 ){
-                System.out.println("你可以给这个投多少呢,您现在可以投" + VOTE_COUNT + "票");
-                i = ScannerUtil.readInt();
-                if (i <= 0 || i > VOTE_COUNT){
-                    System.out.println("票数不对，请重新投票");
-                    //continue;
-                }else{
-                    if (hotSearch.isDoubleAdd()){
-
-                        hotSearch.setHotScore(hotSearch.getHotScore() + i*2);
-                    }else{
-                        hotSearch.setHotScore(hotSearch.getHotScore() + i);
-                    }
-                    VOTE_COUNT = VOTE_COUNT - i;
-                    return;
-                }
-            }else{
-                System.out.println("很遗憾您的剩余的票数不足");
-                break;
-            }
-        }
-        System.out.println("投票结束");
-    }
-
 
     /**
      * 多用户互相不干扰投票
@@ -274,9 +244,6 @@ public class HotView {
         System.out.println("投票结束");
     }
 
-
-
-
     /**
      * 展示出所有的热搜
      * @param hotSearches 热搜列表
@@ -294,44 +261,6 @@ public class HotView {
         }
     }
     /**
-     * 展示出所有的热搜，可以购买热搜
-     * @param hotSearches
-     */
-    /*
-    private void printHotSearchByPrice2(List<HotSearch> hotSearches) {
-        System.out.println("====热搜列表=====");
-        if (hotSearches.size() == 0) {
-            System.out.println("暂无热搜");
-            return;
-        }
-        List<HotSearch> newHotSearch = new ArrayList<>();
-        Iterator<HotSearch> iterator = hotSearches.iterator();
-        while (iterator.hasNext()){
-            HotSearch hotSearch = iterator.next();
-            if (hotSearch.isBuy()){
-                newHotSearch.add(hotSearch);
-                iterator.remove();
-            }
-        }
-        while (iterator.hasNext()){
-            HotSearch hotSearch =   iterator.next();
-            newHotSearch.add(hotSearch);
-            iterator.remove();
-        }
-
-        for (HotSearch hotSearch : newHotSearch){
-            hotSearches.add(hotSearch);
-        }
-      *//*  //进行热度的排序
-        hotService.hotSearchListSorted(hotSearches);*//*
-        int i = 1;
-        for (HotSearch hotSearch : hotSearches) {
-            System.out.println(i + "." + hotSearch.getHotName() + "\t" + hotSearch.getHotScore());
-            i++;
-        }
-    }*/
-
-    /**
      * 添加热搜
      *
      * @return 添加新的热搜
@@ -340,11 +269,9 @@ public class HotView {
         System.out.println("热搜的描述");
         //设置热搜的描述，热搜的值不能20位
         String hotName = ScannerUtil.readString(20);
-
-        //随机给热搜生成一个id
-        Integer id = new Random().nextInt(100);
         //添加热搜，默认的是热搜的分数为0的
-        HotSearch hotSearch = new HotSearch(id, hotName, 0);
+        int i = 0;
+        HotSearch hotSearch = new HotSearch( i++,hotName, 0);
         return hotSearch;
     }
 

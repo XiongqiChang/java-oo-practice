@@ -45,6 +45,11 @@ public class HotSearch {
      */
     private  Integer price;
 
+    /**
+     * 热搜的排名
+     */
+    private  Integer rank;
+
 
     public Integer getHotId() {
         return hotId;
@@ -76,13 +81,34 @@ public class HotSearch {
         this.hotScore = hotScore;
     }
 
+
+    public HotSearch( String hotName, Integer hotScore) {
+        this.hotName = hotName;
+        this.hotScore = hotScore;
+    }
+
+    public HotSearch( String hotName, Integer hotScore,Integer rank) {
+        this.hotName = hotName;
+        this.hotScore = hotScore;
+        this.rank = rank;
+    }
+
     public HotSearch(){}
-    @Override
+   /* @Override
     public String toString() {
         return "HotSearch{" +
                 "hotId=" + hotId +
                 ", hotName='" + hotName + '\'' +
                 ", hotScore=" + hotScore +
+                '}';
+    }*/
+
+    @Override
+    public String toString() {
+        return "HotSearch{" +
+                "hotName='" + hotName + '\'' +
+                ", hotScore=" + hotScore +
+                ", rank=" + rank +
                 '}';
     }
 
@@ -116,5 +142,13 @@ public class HotSearch {
 
     public void setPrice(Integer price) {
         this.price = price;
+    }
+
+    public Integer getRank() {
+        return rank;
+    }
+
+    public void setRank(Integer rank) {
+        this.rank = rank;
     }
 }

@@ -3,6 +3,7 @@ package com.twu.service;
 import com.twu.model.HotSearch;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author r: xqc
@@ -13,13 +14,14 @@ import java.util.*;
 public class HotService {
 
     private  List<HotSearch> hotList = new ArrayList<>();
-
-  {
-      hotList.add(new HotSearch(11,"比特币今天的市场",4));
-      hotList.add(new HotSearch(22,"乘风破浪的姐姐",9));
-      hotList.add(new HotSearch(31,"火影忍者",300));
-      hotList.add(new HotSearch(41,"疫情情况",40));
-  }
+     {
+      hotList.add(new HotSearch("比特币今天的市场",4));
+      hotList.add(new HotSearch("乘风破浪的姐姐",9));
+      hotList.add(new HotSearch("火影忍者",300));
+      hotList.add(new HotSearch("疫情情况",40));
+      hotList.add(new HotSearch(12,"猪肉",0));
+      hotList.add(new HotSearch(213,"天气",0));
+     }
 
     /**
      * 添加热搜
@@ -33,63 +35,37 @@ public class HotService {
      * 展示所有的已经排序的热搜
      */
     public List<HotSearch> hotSearchList(){
-        Collections.sort(hotList, Comparator.comparingInt(HotSearch::getHotScore));
-        Collections.reverse(hotList);
 
+
+        List<HotSearch> collect = hotList.stream().sorted(Comparator.comparing(HotSearch::getHotScore,Comparator.reverseOrder()).thenComparing(HotSearch::getHotId)).collect(Collectors.toList());
         List<HotSearch> newHotSearch = new ArrayList<>();
 
-        Iterator<HotSearch> iterator = hotList.iterator();
+        Iterator<HotSearch> iterator = collect.iterator();
         while (iterator.hasNext()){
             HotSearch next = iterator.next();
-           if (next.isBuy()){
-               newHotSearch.add(next);
-           }
+            if (next.isBuy()){
+                newHotSearch.add(next);
+            }
         }
         //现在newHotSearch里面都是已经购买过热搜的热搜列表
-        Collections.sort(newHotSearch,Comparator.comparingInt(HotSearch::getPrice));
-        Collections.reverse(newHotSearch);
+        Collections.sort(newHotSearch,Comparator.comparingInt(HotSearch::getRank));
 
-        if (newHotSearch.size() >=2){
-            int price = newHotSearch.get(0).getPrice();
-            /*while (iterator1.hasNext()){
-                HotSearch next = iterator1.next();
-                if (next.getPrice() < price){
-                    iterator1.remove();
-                }
-            }*/
-
-            newHotSearch.removeIf(next -> next.getPrice() < price);
-        }
-
-        /**
-         * 将之前的热搜合并到一起
-         */
-        for (HotSearch hotSearch : hotList){
+        for (HotSearch hotSearch : collect){
             if (!hotSearch.isBuy()){
                 newHotSearch.add(hotSearch);
             }
         }
+
+        for (int i = 0; i < newHotSearch.size(); i++){
+            HotSearch hotSearch = newHotSearch.get(i);
+            Integer rank = hotSearch.getRank();
+            if (rank != null && rank != i+1){
+                //获取到此时排位名rank-1的元素
+                Collections.swap(newHotSearch,i,rank - 1);
+                }
+            }
         return  newHotSearch;
     }
-
-    /**
-     * 根据热度进行排序操作
-     */
-    public void hotSearchListSorted(List<HotSearch> hotSearches){
-
-         Collections.sort(hotSearches, Comparator.comparingInt(HotSearch::getHotScore));
-         Collections.reverse(hotSearches);
-    }
-
-    /**
-     * 给热搜投票
-     */
-    public void updateHotScore(int index, List<HotSearch> list, Integer hotScore){
-
-        HotSearch hotSearch = getHotSearchByIndex(index,list);
-        hotSearch.setHotScore(hotSearch.getHotScore()+ hotScore);
-    }
-
     /**
      * 根据下标找到热搜的值
      */
@@ -98,7 +74,18 @@ public class HotService {
         if (index < 0 || index >= list.size() )
             return  null;
         return list.get(index);
-
     }
+
+    public List<HotSearch> deletHotSearch(String description){
+        Iterator<HotSearch> iterator = hotList.iterator();
+        while (iterator.hasNext()){
+            HotSearch next = iterator.next();
+            if (next.getHotName().equals(description)){
+                iterator.remove();
+            }
+        }
+        return  hotList;
+    }
+
 
 }
